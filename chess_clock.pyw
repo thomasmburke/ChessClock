@@ -4,12 +4,13 @@ import os, sys
 
 
 def load_image(name, colorkey=None):
-    fullname = os.path.join("images", name)
+    fullName = os.path.join("images", name)
     try:
-        image = pygame.image.load(fullname)
-    except pygame.error, message:
-        print 'Cannot load image:', name
-        raise SystemExit, message
+        image = pygame.image.load(fullName)
+    except pygame.error as e:
+        print ('Cannot load image:', name)
+        print(str(e))
+        raise SystemExit
     image = image.convert()
     if colorkey is not None:
         if colorkey is -1:
@@ -17,16 +18,16 @@ def load_image(name, colorkey=None):
         image.set_colorkey(colorkey, RLEACCEL)
     return image, image.get_rect()
 
-
-time_a = 0
-time_b = 0
-a_on = False
-b_on = False
+# Initialize start of game to 5 minutes
+aTime = 300
+bTime = 300
+aDown = False
+bDown = False
 
 
 pygame.init()
 pygame.display.init()
-screen = pygame.display.set_mode((800,600))
+screen = pygame.display.set_mode((741,461))
 pygame.display.set_caption("Chess Clock")
 
 background = pygame.Surface(screen.get_size())
@@ -44,59 +45,59 @@ while True:
         if event.type == QUIT:
             sys.exit()
         if event.type == USEREVENT:
-            if time_a > 0:
-                time_a -= 1
+            if aTime > 0:
+                aTime -= 1
             else:
                 pygame.time.set_timer(USEREVENT, 0)
         elif event.type == (USEREVENT + 1):
-            if time_b > 0:
-                time_b -= 1
+            if bTime > 0:
+                bTime -= 1
             else:
                 pygame.time.set_timer(USEREVENT, 0)
         elif event.type == KEYDOWN:
             if event.key == K_a:
-                if not a_on:
+                if not aDown:
                     # Set for 1 second (1000 milliseconds)
                     pygame.time.set_timer(USEREVENT, 1000)
-                    a_on = True
+                    aDown = True
                 else:
                     # The other one should turn on immediately
                     pygame.time.set_timer(USEREVENT, 0)
                     pygame.time.set_timer(USEREVENT+1, 1000)
-                    b_on = True
-                    a_on = False
+                    bDown = True
+                    aDown = False
             if event.key == K_b:
-                if not b_on:
+                if not bDown:
                     pygame.time.set_timer(USEREVENT+1, 1000)
-                    b_on = True
+                    bDown = True
                 else:
                     pygame.time.set_timer(USEREVENT+1, 0)
                     pygame.time.set_timer(USEREVENT, 1000)
-                    a_on = True
-                    b_on = False
+                    aDown = True
+                    bDown = False
             if event.key == K_q:
-                time_a += 60 # add a minute from alloted time_a_rect
-            if event.key == K_z:
-                time_a -= 60 # subtract a minutes
-            if event.key == K_g:
-                time_b += 60
-            if event.key == K_n:
-                time_b -= 60
+                aTime += 60 # add a minute from alloted aTime_rect
+            if event.key == K_e:
+                aTime -= 60 # subtract a minutes
+            if event.key == K_w:
+                bTime += 60
+            if event.key == K_r:
+                bTime -= 60
             if event.key == K_PAUSE or event.key == K_p:
                 #pause both timers
                 pygame.time.set_timer(USEREVENT+1, 0)
                 pygame.time.set_timer(USEREVENT, 0)
     # Formattime into minutes:seconds
-    time_a_str = "%d:%02d" % (int(time_a/60),int(time_a%60))
-    time_b_str = "%d:%02d" % (int(time_b/60),int(time_b%60) )
-    time_a_txt = font.render(time_a_str, 1, (255, 255, 255))
-    time_b_txt = font.render(time_b_str, 1, (255, 255, 255))
-    time_a_rect = time_a_txt.get_rect()
-    time_a_rect.center = (310, 310)
-    time_b_rect = time_b_txt.get_rect()
-    time_b_rect.center = (525, 310)
+    aTime_str = "%d:%02d" % (int(aTime/60),int(aTime%60))
+    bTime_str = "%d:%02d" % (int(bTime/60),int(bTime%60) )
+    aTime_txt = font.render(aTime_str, 1, (255, 255, 255))
+    bTime_txt = font.render(bTime_str, 1, (255, 255, 255))
+    aTime_rect = aTime_txt.get_rect()
+    aTime_rect.center = (240, 240)
+    bTime_rect = bTime_txt.get_rect()
+    bTime_rect.center = (510, 240)
     screen.blit(background, rect)
     screen.blit(clock_image, clock_rect)
-    screen.blit(time_a_txt, time_a_rect)
-    screen.blit(time_b_txt, time_b_rect)
+    screen.blit(aTime_txt, aTime_rect)
+    screen.blit(bTime_txt, bTime_rect)
     pygame.display.update()
