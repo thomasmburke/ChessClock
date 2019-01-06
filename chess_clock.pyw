@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 import os, sys
 
-
+# Designed to load in custom image
 def load_image(name, colorkey=None):
     fullName = os.path.join("images", name)
     try:
@@ -24,22 +24,20 @@ bTime = 300
 aDown = False
 bDown = False
 
-
+# Initialize all pygame imported modules
 pygame.init()
-pygame.display.init()
+# Determin window size of game - for me same size as my image
 screen = pygame.display.set_mode((741,461))
+# Set title of window
 pygame.display.set_caption("Chess Clock")
-
-background = pygame.Surface(screen.get_size())
-rect = background.fill((0, 0, 0))
-
-clock_image, clock_rect = load_image("chess_clock.png")
-
+# Load in images and fonts
+clockImage, clockRect = load_image("chess_clock.png")
+font = pygame.font.Font("fonts/Roboto-Black.ttf", 34)
+# Create a clock object to help keep track of time
 clock = pygame.time.Clock()
 
-font = pygame.font.Font("fonts/Roboto-Black.ttf", 34)
-
 while True:
+    # Determines how often the system looks for input
     clock.tick(30)
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -56,25 +54,16 @@ while True:
                 pygame.time.set_timer(USEREVENT, 0)
         elif event.type == KEYDOWN:
             if event.key == K_a:
-                if not aDown:
-                    # Set for 1 second (1000 milliseconds)
-                    pygame.time.set_timer(USEREVENT, 1000)
-                    aDown = True
-                else:
-                    # The other one should turn on immediately
-                    pygame.time.set_timer(USEREVENT, 0)
-                    pygame.time.set_timer(USEREVENT+1, 1000)
-                    bDown = True
-                    aDown = False
+                # The other one should turn on immediately
+                pygame.time.set_timer(USEREVENT, 0)
+                pygame.time.set_timer(USEREVENT+1, 1000)
+                bDown = True
+                aDown = False
             if event.key == K_b:
-                if not bDown:
-                    pygame.time.set_timer(USEREVENT+1, 1000)
-                    bDown = True
-                else:
-                    pygame.time.set_timer(USEREVENT+1, 0)
-                    pygame.time.set_timer(USEREVENT, 1000)
-                    aDown = True
-                    bDown = False
+                pygame.time.set_timer(USEREVENT+1, 0)
+                pygame.time.set_timer(USEREVENT, 1000)
+                aDown = True
+                bDown = False
             if event.key == K_q:
                 aTime += 60 # add a minute from alloted aTime_rect
             if event.key == K_e:
@@ -83,6 +72,7 @@ while True:
                 bTime += 60
             if event.key == K_r:
                 bTime -= 60
+            # If they press the pause button
             if event.key == K_PAUSE or event.key == K_p:
                 #pause both timers
                 pygame.time.set_timer(USEREVENT+1, 0)
@@ -96,8 +86,8 @@ while True:
     aTime_rect.center = (240, 240)
     bTime_rect = bTime_txt.get_rect()
     bTime_rect.center = (510, 240)
-    screen.blit(background, rect)
-    screen.blit(clock_image, clock_rect)
+    #update image & fonts on the screen
+    screen.blit(clockImage, clockRect)
     screen.blit(aTime_txt, aTime_rect)
     screen.blit(bTime_txt, bTime_rect)
     pygame.display.update()
